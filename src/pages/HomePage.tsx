@@ -39,8 +39,8 @@ const HomePage: React.FC = () => {
     const [name, setName] = useState<string>('');
     const [phone, setPhone] = useState<string>('');
     const [email, setEmail] = useState<string>('');
-    const [showModal, setShowModal] = useState(true); // State to control the modal visibility
-    const [selectedImage, setSelectedImage] = useState<string | null>(''); // Default image
+    const [showModal, setShowModal] = useState(false)
+    const [selectedImage, setSelectedImage] = useState<string | null>('')
 
     const datePickerRef = useRef<HTMLDivElement | null>(null);
 
