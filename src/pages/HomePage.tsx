@@ -128,7 +128,7 @@ const HomePage: React.FC = () => {
                             <HouseButton disabled={true} onClick={() => handleModalClose('Homestay 2')}>Homestay 2</HouseButton>
                             <HouseButton disabled={true} onClick={() => handleModalClose('Homestay 3')}>Homestay 3</HouseButton>
                             <HouseButton disabled={true} onClick={() => handleModalClose('Homestay 4')}>Homestay 4</HouseButton>
-                            <HouseButton disabled={false} onClick={() => handleModalClose('tabanak')}>Homestay Tabanak</HouseButton>
+                            <HouseButton disabled={false} onClick={() => handleModalClose('Tabanak')}>Homestay Tabanak</HouseButton>
                         </ButtonGroup>
                     </Modal>
                 )}
@@ -338,7 +338,7 @@ const MapWrapper = styled.div`
 `;
 
 const ReviewsSection = styled.div`
-    width: 50%;
+    width: 85%;
     margin: 0 auto;
     padding: 20px;
     background-color: transparent;
@@ -449,9 +449,14 @@ const ImageWrapper = styled.div`
 `;
 
 const CarouselWrapper = styled.div`
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+    flex-wrap: wrap
     width: 400px;
     margin: 0 auto;
     animation: fadeInSlideIn 2s forwards;
+    text-align: center;
 
         @keyframes fadeInSlideIn {
         0% {
