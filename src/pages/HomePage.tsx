@@ -31,16 +31,47 @@ import image22 from '../assets/image22.jpg'
 import image23 from '../assets/image23.jpg'
 import image24 from '../assets/image24.jpg'
 import image25 from '../assets/image25.jpg'
+import supabase from '../services/supabaseClient';
 
 const HomePage: React.FC = () => {
+    const formatDate = (date: Date): string => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    };
+    const today = new Date()
+    const todayDate = formatDate(today)
     const [showBooking, setShowBooking] = useState(false);
+    const [data, setData] = useState<any[]>([]);
+    const [error, setError] = useState<string | null>(null);
     const [startDate, setStartDate] = useState<Date | null>(null);
     const [endDate, setEndDate] = useState<Date | null>(null);
     const [name, setName] = useState<string>('');
     const [phone, setPhone] = useState<string>('');
     const [email, setEmail] = useState<string>('');
-    const [showModal, setShowModal] = useState(false)
-    const [selectedImage, setSelectedImage] = useState<string | null>('')
+    const [showModal, setShowModal] = useState(false);
+    const [selectedImage, setSelectedImage] = useState<string | null>('');
+    const [disabledDates, setDisabledDates] = useState<Date[]>([]);
+    const [availability, setAvailability] = useState<any>({});
+
+    const insertBooking = async (homestay_id: string, start_date: string, end_date: string) => {
+        const { data, error } = await supabase
+            .from('booking_table')
+            .insert([
+                {
+                    homestay_id: homestay_id,
+                    start_date: start_date,
+                    end_date: end_date,
+                },
+            ]);
+
+        if (error) {
+            console.error('Error inserting booking:', error.message, error.details, error.hint);
+        } else {
+            console.log('Booking inserted:', data);
+        }
+    };
 
     const datePickerRef = useRef<HTMLDivElement | null>(null);
 
@@ -66,6 +97,7 @@ const HomePage: React.FC = () => {
 
     const handleBooking = () => {
         if (startDate && endDate && name && phone && selectedImage) {
+            insertBooking(selectedImage, startDate.toDateString(), endDate.toDateString());
             const bookingDetails = `Booking from ${startDate.toDateString()} to ${endDate.toDateString()}`;
             const encodedMessage = encodeURIComponent(`${bookingDetails}\n\nName: ${name}\n\nPhone Number: ${phone}\n\nEmail: ${email || '-'} \n\nHomestay: ${selectedImage} `);
             const whatsappURL = `https://api.whatsapp.com/send?phone=60195881945&text=${encodedMessage}`;
@@ -85,15 +117,49 @@ const HomePage: React.FC = () => {
         }
     };
 
+    const fetchData = async () => {
+        try {
+            // Fetch booking data
+            const { data: bookingData, error: bookingError } = await supabase
+                .from('booking_table')
+                .select('*');
+
+            if (bookingError) {
+                throw bookingError;
+            }
+
+            // Process booking data to map availability
+            const availabilityMap: { [date: string]: string[] } = {};
+            bookingData.forEach((item: any) => {
+                const start = new Date(item.start_date);
+                const end = new Date(item.end_date);
+                for (let d = start; d <= end; d.setDate(d.getDate() + 1)) {
+                    const dateString = d.toISOString().split('T')[0]; // Format date as YYYY-MM-DD
+                    if (!availabilityMap[dateString]) {
+                        availabilityMap[dateString] = [];
+                    }
+                    if (!availabilityMap[dateString].includes(item.homestay_id)) {
+                        availabilityMap[dateString].push(item.homestay_id);
+                    }
+                }
+            });
+
+            setAvailability(availabilityMap); // Set availability state
+            setData(bookingData);
+        } catch (error) {
+            setError((error as Error).message);
+        }
+    };
+
+    useEffect(() => {
+        fetchData();
+    }, []);
+
     useEffect(() => {
         if (showBooking && datePickerRef.current) {
             datePickerRef.current.scrollIntoView({ behavior: 'smooth' });
         }
     }, [showBooking]);
-
-    const handleImageChange = (image: string) => {
-        setSelectedImage(image);
-    };
 
     const handleModalClose = (house: any) => {
         setShowModal(false);
@@ -124,11 +190,27 @@ const HomePage: React.FC = () => {
                             </Carousel>
                         </CarouselWrapper>
                         <ButtonGroup>
-                            <HouseButton disabled={true} onClick={() => handleModalClose('Homestay 1')}>Homestay 1</HouseButton>
-                            <HouseButton disabled={true} onClick={() => handleModalClose('Homestay 2')}>Homestay 2</HouseButton>
-                            <HouseButton disabled={true} onClick={() => handleModalClose('Homestay 3')}>Homestay 3</HouseButton>
-                            <HouseButton disabled={true} onClick={() => handleModalClose('Homestay 4')}>Homestay 4</HouseButton>
-                            <HouseButton disabled={false} onClick={() => handleModalClose('Tabanak')}>Homestay Tabanak</HouseButton>
+                            {['Homestay 1', 'Homestay 2', 'Homestay 3', 'Homestay 4'].map((house) => {
+                                return (
+                                    <HouseButton
+                                        key={house}
+                                        disabled={data.some(item =>
+                                            item.homestay_id == house && (item.start_date === todayDate || item.end_date === todayDate)
+                                        )}
+                                        onClick={() => handleModalClose(house)}
+                                    >
+                                        {house}
+                                    </HouseButton>
+                                );
+                            })}
+                            <HouseButton
+                                disabled={data.some(item =>
+                                    item.homestay_id === 'Tabanak' && (item.start_date === todayDate || item.end_date === todayDate)
+                                )}
+                                onClick={() => handleModalClose('Tabanak')}
+                            >
+                                Homestay Tabanak
+                            </HouseButton>
                         </ButtonGroup>
                     </Modal>
                 )}
@@ -145,6 +227,11 @@ const HomePage: React.FC = () => {
                                 selectsStart
                                 dateFormat="yyyy/MM/dd"
                                 placeholderText="Start Date"
+                                filterDate={date => {
+                                    const formattedDate = formatDate(date);
+                                    return !(selectedImage && availability[formattedDate] && availability[formattedDate].includes(selectedImage));
+                                }}
+                            
                             />
                             <DatePicker
                                 selected={endDate || undefined}
@@ -155,6 +242,11 @@ const HomePage: React.FC = () => {
                                 minDate={startDate ? new Date(startDate) : undefined}
                                 dateFormat="yyyy/MM/dd"
                                 placeholderText="End Date"
+                                filterDate={date => {
+                                    const formattedDate = formatDate(date);
+                                    return !(selectedImage && availability[formattedDate] && availability[formattedDate].includes(selectedImage));
+                                }}
+                            
                             />
                         </DatePickerWrapper>
                         <InputWrapper>
