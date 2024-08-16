@@ -55,7 +55,7 @@ const HomePage: React.FC = () => {
     const [disabledDates, setDisabledDates] = useState<Date[]>([]);
     const [availability, setAvailability] = useState<any>({});
 
-    const insertBooking = async (homestay_id: string, start_date: string, end_date: string) => {
+    const insertBooking = async (homestay_id: string, start_date: string, end_date: string, uname: string, phone_number: string) => {
         const { data, error } = await supabase
             .from('booking_table')
             .insert([
@@ -63,6 +63,8 @@ const HomePage: React.FC = () => {
                     homestay_id: homestay_id,
                     start_date: start_date,
                     end_date: end_date,
+                    uname: uname,
+                    phone_number: phone_number
                 },
             ]);
 
@@ -75,16 +77,16 @@ const HomePage: React.FC = () => {
 
     const datePickerRef = useRef<HTMLDivElement | null>(null);
 
-    const generateHouseCaptions = (start: number, end: number, caption: string, availability: string) => {
+    const generateHouseCaptions = (start: number, end: number, caption: string) => {
         const captions = [];
         for (let i = start; i <= end; i++) {
-            captions.push(`${caption} ${availability}`);
+            captions.push(`${caption}`);
         }
         return captions;
     };
 
-    const homestay1To4Captions = generateHouseCaptions(1, 13, "Homestay 1-4", "(Not Available until 1st Oct 24)");
-    const homestayTabanakCaptions = generateHouseCaptions(14, 24, "Homestay Tabanak", "");
+    const homestay1To4Captions = generateHouseCaptions(1, 13, "Homestay 1-4");
+    const homestayTabanakCaptions = generateHouseCaptions(14, 25, "Homestay Tabanak");
 
     const houseCaptions = [...homestay1To4Captions, ...homestayTabanakCaptions];
 
@@ -97,7 +99,7 @@ const HomePage: React.FC = () => {
 
     const handleBooking = () => {
         if (startDate && endDate && name && phone && selectedImage) {
-            insertBooking(selectedImage, startDate.toDateString(), endDate.toDateString());
+            insertBooking(selectedImage, startDate.toDateString(), endDate.toDateString(), name, phone);
             const bookingDetails = `Booking from ${startDate.toDateString()} to ${endDate.toDateString()}`;
             const encodedMessage = encodeURIComponent(`${bookingDetails}\n\nName: ${name}\n\nPhone Number: ${phone}\n\nEmail: ${email || '-'} \n\nHomestay: ${selectedImage} `);
             const whatsappURL = `https://api.whatsapp.com/send?phone=60195881945&text=${encodedMessage}`;
@@ -190,27 +192,11 @@ const HomePage: React.FC = () => {
                             </Carousel>
                         </CarouselWrapper>
                         <ButtonGroup>
-                            {['Homestay 1', 'Homestay 2', 'Homestay 3', 'Homestay 4'].map((house) => {
-                                return (
-                                    <HouseButton
-                                        key={house}
-                                        disabled={data.some(item =>
-                                            item.homestay_id == house && (item.start_date === todayDate || item.end_date === todayDate)
-                                        )}
-                                        onClick={() => handleModalClose(house)}
-                                    >
-                                        {house}
-                                    </HouseButton>
-                                );
-                            })}
-                            <HouseButton
-                                disabled={data.some(item =>
-                                    item.homestay_id === 'Tabanak' && (item.start_date === todayDate || item.end_date === todayDate)
-                                )}
-                                onClick={() => handleModalClose('Tabanak')}
-                            >
-                                Homestay Tabanak
-                            </HouseButton>
+                            <HouseButton onClick={() => handleModalClose('Homestay 1')}>Homestay 1</HouseButton>
+                            <HouseButton onClick={() => handleModalClose('Homestay 2')}>Homestay 2</HouseButton>
+                            <HouseButton onClick={() => handleModalClose('Homestay 3')}>Homestay 3</HouseButton>
+                            <HouseButton onClick={() => handleModalClose('Homestay 4')}>Homestay 4</HouseButton>
+                            <HouseButton onClick={() => handleModalClose('Tabanak')}>Homestay Tabanak</HouseButton>
                         </ButtonGroup>
                     </Modal>
                 )}
@@ -227,11 +213,18 @@ const HomePage: React.FC = () => {
                                 selectsStart
                                 dateFormat="yyyy/MM/dd"
                                 placeholderText="Start Date"
-                                filterDate={date => {
-                                    const formattedDate = formatDate(date);
-                                    return !(selectedImage && availability[formattedDate] && availability[formattedDate].includes(selectedImage));
+                                filterDate={(date) => {
+                                    const formattedDate = formatDate(date)
+                                    const today = new Date();
+                                    const yesterday = new Date(today);
+                                    yesterday.setDate(today.getDate() - 1);
+
+                                    const formattedYesterday = formatDate(yesterday);
+                                    return (
+                                        formattedDate > formattedYesterday &&
+                                        !(selectedImage && availability[formattedDate] && availability[formattedDate].includes(selectedImage))
+                                    );
                                 }}
-                            
                             />
                             <DatePicker
                                 selected={endDate || undefined}
@@ -242,11 +235,18 @@ const HomePage: React.FC = () => {
                                 minDate={startDate ? new Date(startDate) : undefined}
                                 dateFormat="yyyy/MM/dd"
                                 placeholderText="End Date"
-                                filterDate={date => {
+                                filterDate={(date) => {
                                     const formattedDate = formatDate(date);
-                                    return !(selectedImage && availability[formattedDate] && availability[formattedDate].includes(selectedImage));
+                                    const today = new Date();
+                                    const yesterday = new Date(today);
+                                    yesterday.setDate(today.getDate() - 1);
+
+                                    const formattedYesterday = formatDate(yesterday);
+                                    return (
+                                        formattedDate > formattedYesterday &&
+                                        !(selectedImage && availability[formattedDate] && availability[formattedDate].includes(selectedImage))
+                                    );
                                 }}
-                            
                             />
                         </DatePickerWrapper>
                         <InputWrapper>
@@ -269,6 +269,7 @@ const HomePage: React.FC = () => {
                                 placeholder="Enter your email"
                             />
                         </InputWrapper>
+                        <h5>Selected Homestay: {selectedImage}</h5>
                         <ButtonWrapper>
                             <CloseButton onClick={() => setShowBooking(false)}>Close</CloseButton>
                             <BookingButton onClick={handleBooking}>Confirm</BookingButton>
@@ -376,6 +377,7 @@ const ButtonWrapper = styled.div`
     flex-direction: row;
     align-items: center;
     gap: 10px;
+    padding-top: 15px
 `;
 
 const BookingButton = styled.button`
