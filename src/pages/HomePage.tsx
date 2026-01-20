@@ -41,10 +41,7 @@ const HomePage: React.FC = () => {
         return `${year}-${month}-${day}`;
     };
     const today = new Date()
-    const todayDate = formatDate(today)
     const [showBooking, setShowBooking] = useState(false);
-    const [data, setData] = useState<any[]>([]);
-    const [error, setError] = useState<string | null>(null);
     const [startDate, setStartDate] = useState<Date | null>(null);
     const [endDate, setEndDate] = useState<Date | null>(null);
     const [name, setName] = useState<string>('');
@@ -52,7 +49,6 @@ const HomePage: React.FC = () => {
     const [email, setEmail] = useState<string>('');
     const [showModal, setShowModal] = useState(false);
     const [selectedImage, setSelectedImage] = useState<string | null>('');
-    const [disabledDates, setDisabledDates] = useState<Date[]>([]);
     const [availability, setAvailability] = useState<any>({});
 
     const insertBooking = async (homestay_id: string, start_date: string, end_date: string, uname: string, phone_number: string) => {
@@ -332,6 +328,7 @@ const HomePage: React.FC = () => {
                             selectedImage === 'Homestay 3' ||
                             selectedImage === 'Homestay 4' ? <MapWrapper>
                             <iframe
+                                title="Sri Payung Homestay Map"
                                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d993.5641770533502!2d118.28454839999998!3d5.0620872!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x323f0b0edb05ddab%3A0xe614614ef1534af1!2sDarvel%20Bay%20Homestay!5e0!3m2!1sen!2smy!4v1721892187050!5m2!1sen!2smy"
                                 width="600"
                                 height="450"
@@ -342,6 +339,7 @@ const HomePage: React.FC = () => {
                             ></iframe>
                         </MapWrapper> : <MapWrapper>
                             <iframe
+                                title="Homestay Tabanak Map"
                                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d993.6088883685034!2d118.3118181695802!3d5.032895735618385!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x323f9fed96705f03%3A0xe494096278b3979b!2s4078%2C%20Jalan%20Tabanak%203%2C%2091100%20Lahad%20Datu%2C%20Sabah!5e0!3m2!1sen!2smy!4v1723639127864!5m2!1sen!2smy"
                                 width="600"
                                 height="450"
@@ -503,18 +501,6 @@ const ReviewsSection = styled.div`
     }
 `;
 
-const ModalContent = styled.div`
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    position: relative;
-    width: 100%;
-    max-width: 500px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-`;
-
 const ButtonGroup = styled.div`
     display: flex;
     justify-content: space-around;
@@ -555,29 +541,6 @@ const HouseButton = styled.button`
 
     @media (max-width: 768px) {
         width: 80%; /* Take up most of the width in smaller devices */
-    }
-`;
-
-
-
-const ModalImage = styled.img`
-    width: 300px;
-    height: 200px;
-    object-fit: cover;
-    margin-bottom: 20px;
-`;
-
-const ModalButton = styled.button`
-    padding: 10px 20px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-
-    &:hover {
-        background-color: #0056b3;
     }
 `;
 
