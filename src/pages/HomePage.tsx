@@ -188,8 +188,8 @@ const HomePage: React.FC = () => {
                         <ButtonGroup>
                             <HouseButton onClick={() => handleModalClose('Kampung Stay 1')}>Kampung Stay 1</HouseButton>
                             <HouseButton onClick={() => handleModalClose('Kampung Stay 2')}>Kampung Stay 2</HouseButton>
-                            <HouseButton onClick={() => handleModalClose('Homestay 3')}>Homestay 3</HouseButton>
-                            <HouseButton onClick={() => handleModalClose('Homestay 4')}>Homestay 4</HouseButton>
+                            <HouseButton onClick={() => handleModalClose('Kampung Stay 3')}>Kampung Stay 3</HouseButton>
+                            <HouseButton onClick={() => handleModalClose('Kampung Stay 4')}>Kampung Stay 4</HouseButton>
                             <HouseButton onClick={() => handleModalClose('Sri Payung Homestay 2')}>Sri Payung Homestay 2</HouseButton>
                             <HouseButton onClick={() => handleModalClose('Tabanak')}>Homestay Tabanak</HouseButton>
                         </ButtonGroup>
@@ -290,7 +290,7 @@ const HomePage: React.FC = () => {
                                 </ul>
                             </HomestayInfo>
                         )}
-                        {(selectedImage === 'Homestay 3' || selectedImage === 'Homestay 4') && (
+                        {(selectedImage === 'Kampung Stay 3' || selectedImage === 'Kampung Stay 4') && (
                             <HomestayInfo>
                                 <ul>
                                     <li>👉 RM150 / mlm</li>
@@ -321,10 +321,10 @@ const HomePage: React.FC = () => {
                             <CloseButton onClick={() => setShowBooking(false)}>Close</CloseButton>
                             <BookingButton onClick={handleBooking}>Confirm</BookingButton>
                         </ButtonWrapper>
-                        {selectedImage === 'Homestay 1' ||
-                            selectedImage === 'Homestay 2' ||
-                            selectedImage === 'Homestay 3' ||
-                            selectedImage === 'Homestay 4' ? <MapWrapper>
+                        {selectedImage === 'Kampung Stay 1' ||
+                            selectedImage === 'Kampung Stay 2' ||
+                            selectedImage === 'Kampung Stay 3' ||
+                            selectedImage === 'Kampung Stay 4' ? <MapWrapper>
                             <iframe
                                 title="Sri Payung Homestay Map"
                                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d993.5641770533502!2d118.28454839999998!3d5.0620872!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x323f0b0edb05ddab%3A0xe614614ef1534af1!2sDarvel%20Bay%20Homestay!5e0!3m2!1sen!2smy!4v1721892187050!5m2!1sen!2smy"
