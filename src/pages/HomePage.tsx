@@ -19,13 +19,13 @@ import image10 from '../assets/image10.jpg'
 import image11 from '../assets/image11.jpg'
 import image12 from '../assets/image12.jpg'
 import image13 from '../assets/image13.jpg'
-import image14 from '../assets/image14.jpeg' //jpg to jpeg
-import image15 from '../assets/image15.jpeg' //jpg to jpeg
-import image16 from '../assets/image16.jpeg'
-import image17 from '../assets/image17.jpeg'
-import image18 from '../assets/image18.jpeg'
-import image19 from '../assets/image19.jpeg'
-import image20 from '../assets/image20.jpeg'
+import image14 from 'src/assets/image14.jpeg' //jpg to jpeg
+import image15 from 'src/assets/image15.jpeg' //jpg to jpeg
+import image16 from 'src/assets/image16.jpeg'
+import image17 from 'src/assets/image17.jpeg'
+import image18 from 'src/assets/image18.jpeg'
+import image19 from 'src/assets/image19.jpeg'
+import image20 from 'src/assets/image20.jpeg'
 import image21 from '../assets/image21.jpg'
 import image22 from '../assets/image22.jpg'
 import image23 from '../assets/image23.jpg'
