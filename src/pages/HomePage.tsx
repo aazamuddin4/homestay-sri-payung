@@ -87,7 +87,7 @@ const HomePage: React.FC = () => {
 
     const homestay1To4Captions = generateHouseCaptions(1, 13, "Kampung Stay 1-4");
     const homestayTabanakCaptions = generateHouseCaptions(14, 25, "Homestay Tabanak");
-    const homestay2Captions = generateHouseCaptions(14, 25, "Sri Payung Homestay 2");
+    const homestay2Captions = generateHouseCaptions(26, 30, "Sri Payung Homestay 2");
 
     const houseCaptions = [...homestay1To4Captions, ...homestayTabanakCaptions, ...homestay2Captions];
 
