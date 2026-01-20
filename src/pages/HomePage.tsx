@@ -116,38 +116,37 @@ const HomePage: React.FC = () => {
     };
 
     const fetchData = async () => {
-        try {
-            // Fetch booking data
-            const { data: bookingData, error: bookingError } = await supabase
-                .from('booking_table')
-                .select('*');
+    try {
+        const { data: bookingData, error: bookingError } = await supabase
+            .from('booking_table')
+            .select('*');
 
-            if (bookingError) {
-                throw bookingError;
-            }
-
-            // Process booking data to map availability
-            const availabilityMap: { [date: string]: string[] } = {};
-            bookingData.forEach((item: any) => {
-                const start = new Date(item.start_date);
-                const end = new Date(item.end_date);
-                for (let d = start; d <= end; d.setDate(d.getDate() + 1)) {
-                    const dateString = d.toISOString().split('T')[0]; // Format date as YYYY-MM-DD
-                    if (!availabilityMap[dateString]) {
-                        availabilityMap[dateString] = [];
-                    }
-                    if (!availabilityMap[dateString].includes(item.homestay_id)) {
-                        availabilityMap[dateString].push(item.homestay_id);
-                    }
-                }
-            });
-
-            setAvailability(availabilityMap); // Set availability state
-            setData(bookingData);
-        } catch (error) {
-            setError((error as Error).message);
+        if (bookingError) {
+            throw bookingError;
         }
-    };
+
+        const availabilityMap: { [date: string]: string[] } = {};
+
+        bookingData.forEach((item: any) => {
+            const start = new Date(item.start_date);
+            const end = new Date(item.end_date);
+
+            for (let d = start; d <= end; d.setDate(d.getDate() + 1)) {
+                const dateString = d.toISOString().split('T')[0];
+                if (!availabilityMap[dateString]) {
+                    availabilityMap[dateString] = [];
+                }
+                if (!availabilityMap[dateString].includes(item.homestay_id)) {
+                    availabilityMap[dateString].push(item.homestay_id);
+                }
+            }
+        });
+
+        setAvailability(availabilityMap); // ✅ KEEP ONLY THIS
+    } catch (err) {
+        console.error(err); // ✅ no setError
+    }
+};
 
     useEffect(() => {
         fetchData();
