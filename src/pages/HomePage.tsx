@@ -95,7 +95,7 @@ const HomePage: React.FC = () => {
         image1, image2, image3, image4, image5, image6, image7, image8,
         image9, image10, image11, image12, image13, image14, image15,
         image16, image17, image18, image19, image20, image21, image22,
-        image23, image24, image25,
+        image23, image24, image25, image26, image27, image28, image29, image30 
     ];
 
     const handleBooking = () => {
@@ -330,7 +330,7 @@ const HomePage: React.FC = () => {
                         {selectedImage === 'Kampung Stay 1' ||
                             selectedImage === 'Kampung Stay 2' ||
                             selectedImage === 'Kampung Stay 3' ||
-                            selectedImage === 'Kampung Stay 4' ? <MapWrapper>
+                            selectedImage === 'Kampung Stay 4' || Sri Payung Homestay 2 ? <MapWrapper>
                             <iframe
                                 title="Sri Payung Homestay Map"
                                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d993.5641770533502!2d118.28454839999998!3d5.0620872!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x323f0b0edb05ddab%3A0xe614614ef1534af1!2sDarvel%20Bay%20Homestay!5e0!3m2!1sen!2smy!4v1721892187050!5m2!1sen!2smy"
