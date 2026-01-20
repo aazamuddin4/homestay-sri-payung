@@ -2,7 +2,6 @@ import React from 'react';
 import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
 import image1 from '../assets/image1.jpg'
 import image2 from '../assets/image2.jpg'
 import image3 from '../assets/image3.jpg'
