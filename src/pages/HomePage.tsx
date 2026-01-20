@@ -40,7 +40,6 @@ const HomePage: React.FC = () => {
         const day = String(date.getDate()).padStart(2, '0');
         return `${year}-${month}-${day}`;
     };
-    const today = new Date()
     const [showBooking, setShowBooking] = useState(false);
     const [startDate, setStartDate] = useState<Date | null>(null);
     const [endDate, setEndDate] = useState<Date | null>(null);
