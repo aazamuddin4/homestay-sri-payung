@@ -34,7 +34,6 @@ interface ImageCarouselProps {
 }
 
 const ImageCarousel: React.FC<ImageCarouselProps> = ({ onBookNowClick }) => {
-    const navigate = useNavigate();
 
     return (
         <div>
