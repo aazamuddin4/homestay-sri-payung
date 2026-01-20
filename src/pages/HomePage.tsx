@@ -31,6 +31,11 @@ import image22 from '../assets/image22.jpg'
 import image23 from '../assets/image23.jpg'
 import image24 from '../assets/image24.jpg'
 import image25 from '../assets/image25.jpg'
+import image26 from '../assets/image26.jpg'
+import image27 from '../assets/image27.jpg'
+import image28 from '../assets/image28.jpg'
+import image29 from '../assets/image29.jpg'
+import image30 from '../assets/image30.jpg'
 import supabase from '../services/supabaseClient';
 
 const HomePage: React.FC = () => {
@@ -80,10 +85,11 @@ const HomePage: React.FC = () => {
         return captions;
     };
 
-    const homestay1To4Captions = generateHouseCaptions(1, 13, "Homestay 1-4");
+    const homestay1To4Captions = generateHouseCaptions(1, 13, "Kampung Stay 1-4");
     const homestayTabanakCaptions = generateHouseCaptions(14, 25, "Homestay Tabanak");
+    const homestay2Captions = generateHouseCaptions(14, 25, "Sri Payung Homestay 2");
 
-    const houseCaptions = [...homestay1To4Captions, ...homestayTabanakCaptions];
+    const houseCaptions = [...homestay1To4Captions, ...homestayTabanakCaptions, ...homestay2Captions];
 
     const images = [
         image1, image2, image3, image4, image5, image6, image7, image8,
