@@ -192,10 +192,11 @@ const HomePage: React.FC = () => {
                             </Carousel>
                         </CarouselWrapper>
                         <ButtonGroup>
-                            <HouseButton onClick={() => handleModalClose('Homestay 1')}>Homestay 1</HouseButton>
-                            <HouseButton onClick={() => handleModalClose('Homestay 2')}>Homestay 2</HouseButton>
+                            <HouseButton onClick={() => handleModalClose('Kampung Stay 1')}>Kampung Stay 1</HouseButton>
+                            <HouseButton onClick={() => handleModalClose('Kampung Stay 2')}>Kampung Stay 2</HouseButton>
                             <HouseButton onClick={() => handleModalClose('Homestay 3')}>Homestay 3</HouseButton>
                             <HouseButton onClick={() => handleModalClose('Homestay 4')}>Homestay 4</HouseButton>
+                            <HouseButton onClick={() => handleModalClose('Sri Payung Homestay 2')}>Sri Payung Homestay 2</HouseButton>
                             <HouseButton onClick={() => handleModalClose('Tabanak')}>Homestay Tabanak</HouseButton>
                         </ButtonGroup>
                     </Modal>
@@ -270,6 +271,58 @@ const HomePage: React.FC = () => {
                             />
                         </InputWrapper>
                         <h5>Selected Homestay: {selectedImage}</h5>
+                        {selectedImage === 'Tabanak' && (
+                            <HomestayInfo>
+                                <ul>
+                                    <li>👉 RM420 / night</li>
+                                    <li>👉 RM450 / weekend</li>
+                                    <li>👉 50% off monthly</li>
+                                    <li>👉 4 bilik</li>
+                                    <li>👉 3 tandas (2 tandas ada water heater)</li>
+                                    <li>👉 Ada Coway, ada oven Panasonic</li>
+                                </ul>
+                            </HomestayInfo>
+                        )}
+                        {(selectedImage === 'Kampung Stay 1' || selectedImage === 'Kampung Stay 2') && (
+                            <HomestayInfo>
+                                <ul>
+                                    <li>👉 RM120 / mlm</li>
+                                    <li>👉 2 bilik</li>
+                                    <li>👉 1 aircond</li>
+                                    <li>👉 Ruang dapur</li>
+                                    <li>👉 Peralatan memasak</li>
+                                    <li>👉 1 tandas dgn water heater</li>
+                                    <li>👉 TV, meja makan & sofa</li>
+                                </ul>
+                            </HomestayInfo>
+                        )}
+                        {(selectedImage === 'Homestay 3' || selectedImage === 'Homestay 4') && (
+                            <HomestayInfo>
+                                <ul>
+                                    <li>👉 RM150 / mlm</li>
+                                    <li>👉 2 bilik</li>
+                                    <li>👉 2 aircond</li>
+                                    <li>👉 TV Android</li>
+                                    <li>👉 Peti sejuk</li>
+                                    <li>👉 1 sofa / bed</li>
+                                    <li>👉 Peralatan memasak</li>
+                                    <li>👉 1 tandas dgn water heater</li>
+                                </ul>
+                            </HomestayInfo>
+                        )}
+                        {selectedImage === 'Sri Payung Homestay 2' && (
+                            <HomestayInfo>
+                                <ul>
+                                    <li>👉 RM180 / mlm</li>
+                                    <li>👉 4 bilik</li>
+                                    <li>👉 TV dgn siaran NJOI</li>
+                                    <li>👉 Peti sejuk</li>
+                                    <li>👉 Coway</li>
+                                    <li>👉 Peralatan memasak</li>
+                                    <li>👉 1 tandas & 2 kamar mandi</li>
+                                </ul>
+                            </HomestayInfo>
+                        )}
                         <ButtonWrapper>
                             <CloseButton onClick={() => setShowBooking(false)}>Close</CloseButton>
                             <BookingButton onClick={handleBooking}>Confirm</BookingButton>
@@ -525,6 +578,26 @@ const ModalButton = styled.button`
 
     &:hover {
         background-color: #0056b3;
+    }
+`;
+
+const HomestayInfo = styled.div`
+    margin-top: 12px;
+    padding: 14px;
+    background-color: #e9f5ff;
+    border-radius: 8px;
+    text-align: left;
+    width: 100%;
+    max-width: 420px;
+
+    ul {
+        margin: 0;
+        padding-left: 18px;
+    }
+
+    li {
+        margin-bottom: 6px;
+        font-size: 14px;
     }
 `;
 
