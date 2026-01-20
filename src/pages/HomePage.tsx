@@ -20,7 +20,7 @@ import image11 from '../assets/image11.jpg'
 import image12 from '../assets/image12.jpg'
 import image13 from '../assets/image13.jpg'
 import image14 from '../assets/image14.jpeg' //jpg to jpeg
-import image15 from '../assets/image15.jpeg'
+import image15 from '../assets/image15.jpeg' //jpg to jpeg
 import image16 from '../assets/image16.jpeg'
 import image17 from '../assets/image17.jpeg'
 import image18 from '../assets/image18.jpeg'
