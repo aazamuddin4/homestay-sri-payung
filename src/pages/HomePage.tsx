@@ -639,18 +639,3 @@ const reviewsData = [
 ];
 
 export default HomePage;
-
-const DebugPanel = styled.div`
-    position: fixed;
-    right: 10px;
-    bottom: 10px;
-    width: 320px;
-    max-height: 400px;
-    overflow: auto;
-    background: rgba(0,0,0,0.8);
-    color: #fff;
-    padding: 10px;
-    border-radius: 6px;
-    font-size: 12px;
-    z-index: 9999;
-`;
