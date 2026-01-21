@@ -19,23 +19,23 @@ import image10 from '../assets/image10.jpg'
 import image11 from '../assets/image11.jpg'
 import image12 from '../assets/image12.jpg'
 import image13 from '../assets/image13.jpg'
-import image14 from 'src/assets/image14.jpeg' //jpg to jpeg
-import image15 from 'src/assets/image15.jpeg' //jpg to jpeg
-import image16 from 'src/assets/image16.jpeg'
-import image17 from 'src/assets/image17.jpeg'
-import image18 from 'src/assets/image18.jpeg'
-import image19 from 'src/assets/image19.jpeg'
-import image20 from 'src/assets/image20.jpeg'
+import image14 from '../assets/image14.jpg'
+import image15 from '../assets/image15.jpg'
+import image16 from '../assets/image16.jpg'
+import image17 from '../assets/image17.jpg'
+import image18 from '../assets/image18.jpg'
+import image19 from '../assets/image19.jpg'
+import image20 from '../assets/image20.jpg'
 import image21 from '../assets/image21.jpg'
 import image22 from '../assets/image22.jpg'
 import image23 from '../assets/image23.jpg'
 import image24 from '../assets/image24.jpg'
 import image25 from '../assets/image25.jpg'
-import image26 from '../assets/image26.jpeg'
-import image27 from '../assets/image27.jpeg'
-import image28 from '../assets/image28.jpeg'
-import image29 from '../assets/image29.jpeg'
-import image30 from '../assets/image30.jpeg'
+import image26 from '../assets/image26.jpg'
+import image27 from '../assets/image27.jpg'
+import image28 from '../assets/image28.jpg'
+import image29 from '../assets/image29.jpg'
+import image30 from '../assets/image30.jpg'
 import supabase from '../services/supabaseClient';
 
 const HomePage: React.FC = () => {
@@ -56,22 +56,33 @@ const HomePage: React.FC = () => {
     const [availability, setAvailability] = useState<any>({});
 
     const insertBooking = async (homestay_id: string, start_date: string, end_date: string, uname: string, phone_number: string) => {
-        const { data, error } = await supabase
-            .from('booking_table')
-            .insert([
-                {
-                    homestay_id: homestay_id,
-                    start_date: start_date,
-                    end_date: end_date,
-                    uname: uname,
-                    phone_number: phone_number
-                },
-            ]);
+        try {
+            const { data, error, status, statusText } = await supabase
+                .from('booking_table')
+                .insert([
+                    {
+                        homestay_id: homestay_id,
+                        start_date: start_date,
+                        end_date: end_date,
+                        uname: uname,
+                        phone_number: phone_number,
+                        email: email || null,
+                    },
+                ]);
 
-        if (error) {
-            console.error('Error inserting booking:', error.message, error.details, error.hint);
-        } else {
-            console.log('Booking inserted:', data);
+            if (error) {
+                // Show full error object for debugging
+                console.error('Supabase insert error:', error);
+                alert(`Booking failed: ${error.message || 'unknown error'} (check console)`);
+                return false;
+            }
+
+            console.log('Booking inserted:', data, { status, statusText });
+            return true;
+        } catch (err) {
+            console.error('Unexpected error inserting booking:', err);
+            alert('Booking failed: unexpected error (check console)');
+            return false;
         }
     };
 
@@ -86,7 +97,7 @@ const HomePage: React.FC = () => {
     };
 
     const homestay1To4Captions = generateHouseCaptions(1, 13, "Kampung Stay 1-4");
-    const homestayTabanakCaptions = generateHouseCaptions(14, 25, "Homestay Tabanak");
+    const homestayTabanakCaptions = generateHouseCaptions(14, 25, "Sri Payung Homestay");
     const homestay2Captions = generateHouseCaptions(26, 30, "Sri Payung Homestay 2");
 
     const houseCaptions = [...homestay1To4Captions, ...homestayTabanakCaptions, ...homestay2Captions];
@@ -98,10 +109,13 @@ const HomePage: React.FC = () => {
         image23, image24, image25, image26, image27, image28, image29, image30 
     ];
 
-    const handleBooking = () => {
+    const handleBooking = async () => {
         if (startDate && endDate && name && phone && selectedImage) {
-            insertBooking(selectedImage, startDate.toDateString(), endDate.toDateString(), name, phone);
-            const bookingDetails = `Booking from ${startDate.toDateString()} to ${endDate.toDateString()}`;
+            const start_iso = formatDate(startDate);
+            const end_iso = formatDate(endDate);
+            const ok = await insertBooking(selectedImage, start_iso, end_iso, name, phone);
+            const bookingDetails = `Booking from ${start_iso} to ${end_iso}`;
+            if (!ok) return; // abort if insert failed
             const encodedMessage = encodeURIComponent(`${bookingDetails}\n\nName: ${name}\n\nPhone Number: ${phone}\n\nEmail: ${email || '-'} \n\nHomestay: ${selectedImage} `);
             const whatsappURL = `https://api.whatsapp.com/send?phone=60195881945&text=${encodedMessage}`;
 
@@ -126,6 +140,8 @@ const HomePage: React.FC = () => {
             .from('booking_table')
             .select('*');
 
+        console.debug('fetchData result', { bookingData, bookingError });
+
         if (bookingError) {
             throw bookingError;
         }
@@ -133,25 +149,36 @@ const HomePage: React.FC = () => {
         const availabilityMap: { [date: string]: string[] } = {};
 
         bookingData.forEach((item: any) => {
-            const start = new Date(item.start_date);
-            const end = new Date(item.end_date);
+            // Parse dates as UTC to avoid local timezone shifts when converting to ISO date strings
+            const start = new Date(String(item.start_date) + 'T00:00:00Z');
+            const end = new Date(String(item.end_date) + 'T00:00:00Z');
+            // normalize homestay id to string so comparisons are consistent
+            const hid = String(item.homestay_id).trim();
 
-            for (let d = start; d <= end; d.setDate(d.getDate() + 1)) {
+            for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
                 const dateString = d.toISOString().split('T')[0];
                 if (!availabilityMap[dateString]) {
                     availabilityMap[dateString] = [];
                 }
-                if (!availabilityMap[dateString].includes(item.homestay_id)) {
-                    availabilityMap[dateString].push(item.homestay_id);
+                if (!availabilityMap[dateString].includes(hid)) {
+                    availabilityMap[dateString].push(hid);
                 }
             }
         });
 
         setAvailability(availabilityMap); // ✅ KEEP ONLY THIS
+        console.debug('Fetched availability map:', availabilityMap);
     } catch (err) {
         console.error(err); // ✅ no setError
     }
 };
+
+    // Debug when selectedImage changes to ensure it matches availability items
+    useEffect(() => {
+        if (selectedImage) {
+            console.debug('Selected homestay:', selectedImage);
+        }
+    }, [selectedImage]);
 
     useEffect(() => {
         fetchData();
@@ -196,8 +223,8 @@ const HomePage: React.FC = () => {
                             <HouseButton onClick={() => handleModalClose('Kampung Stay 2')}>Kampung Stay 2</HouseButton>
                             <HouseButton onClick={() => handleModalClose('Kampung Stay 3')}>Kampung Stay 3</HouseButton>
                             <HouseButton onClick={() => handleModalClose('Kampung Stay 4')}>Kampung Stay 4</HouseButton>
+                            <HouseButton onClick={() => handleModalClose('Sri Payung Homestay')}>Sri Payung Homestay</HouseButton>
                             <HouseButton onClick={() => handleModalClose('Sri Payung Homestay 2')}>Sri Payung Homestay 2</HouseButton>
-                            <HouseButton onClick={() => handleModalClose('Tabanak')}>Homestay Tabanak</HouseButton>
                         </ButtonGroup>
                     </Modal>
                 )}
@@ -215,16 +242,16 @@ const HomePage: React.FC = () => {
                                 dateFormat="yyyy/MM/dd"
                                 placeholderText="Start Date"
                                 filterDate={(date) => {
-                                    const formattedDate = formatDate(date)
+                                    const formattedDate = formatDate(date);
                                     const today = new Date();
                                     const yesterday = new Date(today);
                                     yesterday.setDate(today.getDate() - 1);
 
                                     const formattedYesterday = formatDate(yesterday);
-                                    return (
-                                        formattedDate > formattedYesterday &&
-                                        !(selectedImage && availability[formattedDate] && availability[formattedDate].includes(selectedImage))
-                                    );
+                                    const hid = selectedImage ? String(selectedImage).trim() : null;
+                                    const blocked = hid && availability[formattedDate] && availability[formattedDate].includes(hid);
+                                    if (hid) console.debug(`filterDate check ${formattedDate} hid=${hid} blocked=${!!blocked}`);
+                                    return formattedDate > formattedYesterday && !blocked;
                                 }}
                             />
                             <DatePicker
@@ -243,10 +270,10 @@ const HomePage: React.FC = () => {
                                     yesterday.setDate(today.getDate() - 1);
 
                                     const formattedYesterday = formatDate(yesterday);
-                                    return (
-                                        formattedDate > formattedYesterday &&
-                                        !(selectedImage && availability[formattedDate] && availability[formattedDate].includes(selectedImage))
-                                    );
+                                    const hid = selectedImage ? String(selectedImage).trim() : null;
+                                    const blocked = hid && availability[formattedDate] && availability[formattedDate].includes(hid);
+                                    if (hid) console.debug(`filterDate (end) check ${formattedDate} hid=${hid} blocked=${!!blocked}`);
+                                    return formattedDate > formattedYesterday && !blocked;
                                 }}
                             />
                         </DatePickerWrapper>
@@ -271,7 +298,7 @@ const HomePage: React.FC = () => {
                             />
                         </InputWrapper>
                         <h5>Selected Homestay: {selectedImage}</h5>
-                        {selectedImage === 'Tabanak' && (
+                        {selectedImage === 'Sri Payung Homestay' && (
                             <HomestayInfo>
                                 <ul>
                                     <li>👉 RM420 / night</li>
@@ -332,7 +359,7 @@ const HomePage: React.FC = () => {
                             selectedImage === 'Kampung Stay 3' ||
                             selectedImage === 'Kampung Stay 4' || selectedImage === 'Sri Payung Homestay 2' ? <MapWrapper>
                             <iframe
-                                title="Sri Payung Homestay Map"
+                                title="Kampung Stay & Sri Payung Homestay 2 Map"
                                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d993.5641770533502!2d118.28454839999998!3d5.0620872!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x323f0b0edb05ddab%3A0xe614614ef1534af1!2sDarvel%20Bay%20Homestay!5e0!3m2!1sen!2smy!4v1721892187050!5m2!1sen!2smy"
                                 width="600"
                                 height="450"
@@ -343,7 +370,7 @@ const HomePage: React.FC = () => {
                             ></iframe>
                         </MapWrapper> : <MapWrapper>
                             <iframe
-                                title="Homestay Tabanak Map"
+                                title="Sri Payung Homestay Map"
                                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d993.6088883685034!2d118.3118181695802!3d5.032895735618385!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x323f9fed96705f03%3A0xe494096278b3979b!2s4078%2C%20Jalan%20Tabanak%203%2C%2091100%20Lahad%20Datu%2C%20Sabah!5e0!3m2!1sen!2smy!4v1723639127864!5m2!1sen!2smy"
                                 width="600"
                                 height="450"
@@ -612,3 +639,18 @@ const reviewsData = [
 ];
 
 export default HomePage;
+
+const DebugPanel = styled.div`
+    position: fixed;
+    right: 10px;
+    bottom: 10px;
+    width: 320px;
+    max-height: 400px;
+    overflow: auto;
+    background: rgba(0,0,0,0.8);
+    color: #fff;
+    padding: 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    z-index: 9999;
+`;
