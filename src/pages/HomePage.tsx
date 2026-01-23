@@ -40,6 +40,7 @@ import supabase from '../services/supabaseClient';
 import image31 from '../assets/image31.jpg';
 import image32 from '../assets/image32.jpg';
 import image33 from '../assets/image33.jpg';
+import image34 from '../assets/image34.jpg';
 import { Carousel as MiniCarousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 
@@ -258,6 +259,9 @@ const HomePage: React.FC = () => {
                         <PromoText>
                             <b>Scuba, snorkeling & island hopping</b> around clear water <b>Darvel Bay</b>
                         </PromoText>
+                        <PromoText>
+                            Thrilling outdoor adventures await with <b>ATV</b> rides through scenic trails!
+                        </PromoText>
                         <MiniPromoCarousel>
                             <MiniCarousel
                                 showThumbs={false}
@@ -279,6 +283,9 @@ const HomePage: React.FC = () => {
                                 </div>
                                 <div>
                                     <MiniPromoImg src={image33} alt="Island hopping" />
+                                </div>
+                                <div>
+                                    <MiniPromoImg src={image34} alt="ATV" />
                                 </div>
                             </MiniCarousel>
                         </MiniPromoCarousel>
@@ -751,6 +758,18 @@ const PromoBanner = styled.div`
     @keyframes fadeIn {
         from { opacity: 0; transform: translateY(-20px) translateX(40px);}
         to { opacity: 1; transform: translateY(0) translateX(0);}
+    }
+
+    @media (max-width: 600px) {
+        left: 50%;
+        right: auto;
+        top: 16px;
+        transform: translateX(-50%);
+        min-width: 0;
+        max-width: 95vw;
+        width: 95vw;
+        padding: 14px 8px 14px 12px;
+        font-size: 0.98em;
     }
 `;
 
