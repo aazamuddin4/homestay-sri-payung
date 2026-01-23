@@ -1,11 +1,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import Routes from './routes';
+import { Analytics } from "@vercel/analytics/react";
+import App from './App';
 
 ReactDOM.render(
     <React.StrictMode>
-        <Routes />
+        <App />
+        <Analytics />
     </React.StrictMode>,
     document.getElementById('root')
 );

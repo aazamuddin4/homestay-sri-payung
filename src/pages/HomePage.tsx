@@ -37,8 +37,47 @@ import image28 from '../assets/image28.jpg'
 import image29 from '../assets/image29.jpg'
 import image30 from '../assets/image30.jpg'
 import supabase from '../services/supabaseClient';
+import image31 from '../assets/image31.jpg';
+import image32 from '../assets/image32.jpg';
+import image33 from '../assets/image33.jpg';
+import { Carousel as MiniCarousel } from 'react-responsive-carousel';
+import 'react-responsive-carousel/lib/styles/carousel.min.css';
+
+// Styled-components for mini carousel in promo banner 2
+const MiniPromoCarousel = styled.div`
+    margin-top: 12px;
+    width: 220px;
+    max-width: 100%;
+    & .carousel .slide {
+        background: none !important;
+    }
+`;
+
+const MiniPromoImg = styled.img`
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 10px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.13);
+`;
 
 const HomePage: React.FC = () => {
+    // Promo banner state, sessionStorage-persistent
+    const [showPromo, setShowPromo] = useState(() => {
+        return sessionStorage.getItem('promoDismissed') !== '1';
+    });
+
+    const handleClosePromo = () => {
+        setShowPromo(false);
+        sessionStorage.setItem('promoDismissed', '1');
+    };
+    const [showPromo2, setShowPromo2] = useState(() => {
+        return sessionStorage.getItem('promo2Dismissed') !== '1';
+    });
+    const handleClosePromo2 = () => {
+        setShowPromo2(false);
+        sessionStorage.setItem('promo2Dismissed', '1');
+    };
     const formatDate = (date: Date): string => {
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
@@ -106,7 +145,7 @@ const HomePage: React.FC = () => {
         image1, image2, image3, image4, image5, image6, image7, image8,
         image9, image10, image11, image12, image13, image14, image15,
         image16, image17, image18, image19, image20, image21, image22,
-        image23, image24, image25, image26, image27, image28, image29, image30 
+        image23, image24, image25, image26, image27, image28, image29, image30
     ];
 
     const handleBooking = async () => {
@@ -135,43 +174,43 @@ const HomePage: React.FC = () => {
     };
 
     const fetchData = async () => {
-    try {
-        const { data: bookingData, error: bookingError } = await supabase
-            .from('booking_table')
-            .select('*');
+        try {
+            const { data: bookingData, error: bookingError } = await supabase
+                .from('booking_table')
+                .select('*');
 
-        console.debug('fetchData result', { bookingData, bookingError });
+            console.debug('fetchData result', { bookingData, bookingError });
 
-        if (bookingError) {
-            throw bookingError;
-        }
-
-        const availabilityMap: { [date: string]: string[] } = {};
-
-        bookingData.forEach((item: any) => {
-            // Parse dates as UTC to avoid local timezone shifts when converting to ISO date strings
-            const start = new Date(String(item.start_date) + 'T00:00:00Z');
-            const end = new Date(String(item.end_date) + 'T00:00:00Z');
-            // normalize homestay id to string so comparisons are consistent
-            const hid = String(item.homestay_id).trim();
-
-            for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-                const dateString = d.toISOString().split('T')[0];
-                if (!availabilityMap[dateString]) {
-                    availabilityMap[dateString] = [];
-                }
-                if (!availabilityMap[dateString].includes(hid)) {
-                    availabilityMap[dateString].push(hid);
-                }
+            if (bookingError) {
+                throw bookingError;
             }
-        });
 
-        setAvailability(availabilityMap); // ✅ KEEP ONLY THIS
-        console.debug('Fetched availability map:', availabilityMap);
-    } catch (err) {
-        console.error(err); // ✅ no setError
-    }
-};
+            const availabilityMap: { [date: string]: string[] } = {};
+
+            bookingData.forEach((item: any) => {
+                // Parse dates as UTC to avoid local timezone shifts when converting to ISO date strings
+                const start = new Date(String(item.start_date) + 'T00:00:00Z');
+                const end = new Date(String(item.end_date) + 'T00:00:00Z');
+                // normalize homestay id to string so comparisons are consistent
+                const hid = String(item.homestay_id).trim();
+
+                for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+                    const dateString = d.toISOString().split('T')[0];
+                    if (!availabilityMap[dateString]) {
+                        availabilityMap[dateString] = [];
+                    }
+                    if (!availabilityMap[dateString].includes(hid)) {
+                        availabilityMap[dateString].push(hid);
+                    }
+                }
+            });
+
+            setAvailability(availabilityMap); // ✅ KEEP ONLY THIS
+            console.debug('Fetched availability map:', availabilityMap);
+        } catch (err) {
+            console.error(err); // ✅ no setError
+        }
+    };
 
     // Debug when selectedImage changes to ensure it matches availability items
     useEffect(() => {
@@ -198,6 +237,56 @@ const HomePage: React.FC = () => {
 
     return (
         <>
+            {showPromo && (
+                <PromoBanner>
+                    <PromoIcon>🔥</PromoIcon>
+                    <PromoContent>
+                        <PromoTitle>30% OFF Long Stay!</PromoTitle>
+                        <PromoText>
+                            Book for <b>14 days or more</b> and enjoy a <b>30% discount</b> on your total stay.<br />
+                        </PromoText>
+                    </PromoContent>
+                    <ClosePromoButton onClick={handleClosePromo} aria-label="Close promotion">×</ClosePromoButton>
+                </PromoBanner>
+
+            )}
+            {showPromo2 && (
+                <PromoBanner style={{ top: showPromo ? 200 : 24 }}>
+                    <PromoIcon>🌅</PromoIcon>
+                    <PromoContent>
+                        <PromoTitle>Your perfect vacation with outdoor activities</PromoTitle>
+                        <PromoText>
+                            <b>Scuba, snorkeling & island hopping</b> around clear water <b>Darvel Bay</b>
+                        </PromoText>
+                        <MiniPromoCarousel>
+                            <MiniCarousel
+                                showThumbs={false}
+                                showStatus={false}
+                                showIndicators={false}
+                                infiniteLoop
+                                autoPlay
+                                interval={2500}
+                                stopOnHover={false}
+                                swipeable
+                                emulateTouch
+                                dynamicHeight={false}
+                            >
+                                <div>
+                                    <MiniPromoImg src={image31} alt="Scuba adventure" />
+                                </div>
+                                <div>
+                                    <MiniPromoImg src={image32} alt="Snorkeling fun" />
+                                </div>
+                                <div>
+                                    <MiniPromoImg src={image33} alt="Island hopping" />
+                                </div>
+                            </MiniCarousel>
+                        </MiniPromoCarousel>
+                    </PromoContent>
+                    <ClosePromoButton onClick={handleClosePromo2} aria-label="Close early bird promo">×</ClosePromoButton>
+                </PromoBanner>
+            )}
+
             <HomePageWrapper>
                 <Title>Home2stay Inap Sri Payung</Title>
                 <ImageCarousel onBookNowClick={() => setShowModal(true)} />
@@ -639,3 +728,66 @@ const reviewsData = [
 ];
 
 export default HomePage;
+
+const PromoBanner = styled.div`
+    position: fixed;
+    top: 24px;
+    right: 32px;
+    background: linear-gradient(90deg, #ff9800 0%, #ff5722 100%);
+    color: #fff;
+    padding: 18px 24px 18px 18px;
+    border-radius: 12px;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.13);
+    z-index: 9999;
+    font-size: 1.08em;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    min-width: 220px;
+    max-width: 400px;
+    width: auto;
+    animation: fadeIn 0.5s;
+    border: 2px solid #fff3e0;
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-20px) translateX(40px);}
+        to { opacity: 1; transform: translateY(0) translateX(0);}
+    }
+`;
+
+const PromoIcon = styled.span`
+    font-size: 2.1em;
+    margin-right: 6px;
+    filter: drop-shadow(0 1px 2px #ffb300);
+`;
+
+const PromoContent = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+`;
+
+const PromoTitle = styled.div`
+    font-weight: bold;
+    font-size: 1.13em;
+    margin-bottom: 2px;
+    letter-spacing: 0.5px;
+`;
+
+const PromoText = styled.div`
+    font-size: 0.98em;
+    line-height: 1.4;
+`;
+
+const ClosePromoButton = styled.button`
+    background: transparent;
+    border: none;
+    color: #333;
+    font-size: 1.5em;
+    margin-left: 12px;
+    cursor: pointer;
+    line-height: 1;
+    &:hover {
+        color: #e57373;
+    }
+`;
